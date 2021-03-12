@@ -1,0 +1,131 @@
+{
+    _id: "",
+    req: "",
+    payment: "",
+    confirm: "",
+}
+
+1. Request X -> (customer Q -> Provider Stock -> Provider S minus -> Customer Q minus -> uuid() id ->  )
+2. Payment <- Request X
+3. Confirm <- Payment <- Request X
+
+{
+    time: "",
+    req_id: "",
+    prov_id: "",
+    order: [
+        {commodity,quantity}
+    ],
+}.toString().hash(sha256);
+
+hash: ''
+
+{
+    request:{
+        time: "",
+        req_id: "",
+        prov_id: "",
+        order: [
+            {commodity,quantity}
+        ],
+    }
+    sign: "",
+}
+
+{
+    "req_sign": "",
+    "prov_sign": "",
+}
+
+
+GET customer/commodities
+[
+    {
+        id: "",
+        name: "",
+        description: "",
+        unit: "",
+        price: "",
+
+        quota: {
+            avail: 21,
+            alloted: 24,
+        }
+    }
+]
+
+GET supplier/stock
+[
+    {
+        id: "",
+        name: "",
+        description: "",
+        unit: "",
+        price: "",
+
+        stock: {
+            max: 21,
+            alloted: 24,
+        }
+    }
+]
+GET distributor/stock
+[
+    {
+        id: "",
+        name: "",
+        description: "",
+        unit: "",
+        price: "",
+
+        stock: {
+            available: 24,
+        }
+    }
+]
+
+GET /commodity/image/:id
+
+Provider List
+
+POST /customer/providers
+{
+    searchRadius: "",
+    sort: enum: ['nearest','Satisfying max']
+    order: [
+        {Commodity details}
+    ]
+}
+
+{
+    [
+        {
+            prov_id:
+            name:
+            addr:
+            location:
+            commoditiesStatisfying:
+        }
+    ]
+}
+
+POST /supplier/providers
+{
+    searchRadius: "",
+    sort: enum: ['nearest','Satisfying max']
+    order: [
+        {Commodity details}
+    ]
+}
+
+{
+    [
+        {
+            prov_id:
+            name:
+            addr:
+            location:
+            commoditiesStatisfying:
+        }
+    ]
+}
