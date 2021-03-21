@@ -5,7 +5,13 @@ const db = require("./Models");
 
 //Routers
 const login = require("./Routes/login");
+const productImage = require("./Routes/productImage");
 
+const customer = require("./Routes/Customer");
+const supplier = require("./Routes/Supplier");
+const distributor = require("./Routes/Distributor");
+
+//Declaring the application
 const app = express();
 
 //Middleware
@@ -13,6 +19,11 @@ app.use(express.json());
 
 //Setting up routes
 app.use("/login", login);
+app.use("/productImage",productImage);
+
+app.use("/customer", customer);
+app.use("/supplier", supplier);
+app.use("/distributor", distributor);
 
 //Default Error Handler
 app.use((err, req, res, next) => {
