@@ -1,15 +1,17 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const orderDetailSchema = mongoose.Schema(
   {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
+    product: {
+      type: Number,
       ref: "Commodity",
       required: true,
+      unique: true,
     },
     quantity: {
       type: Number,
       required: true,
+      min: [0, "Order quantity must be >= 0"]
     },
   },
   { _id: false }

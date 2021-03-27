@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const distributorSchema = mongoose.Schema({
   _id: {
     //Reg_no.
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: "GP_Distributor",
   },
   regDateTime: {

@@ -1,0 +1,37 @@
+[
+    {
+    "_id": 1001,
+    "name": "Wheat",
+    "description": "Wheat Description",
+    "unit": "Kg",
+    "price": 20
+    },
+    {
+    "_id": 1002,
+    "name": "Rice",
+    "description": "Rice Description",
+    "unit": "Kg",
+    "price": 30
+    },
+    {
+    "_id": 1003,
+    "name": "Maize",
+    "description": "Maize Description",
+    "unit": "Kg",
+    "price": 25
+    },
+    {
+    "_id": 1004,
+    "name": "Barley",
+    "description": "Barley Description",
+    "unit": "Kg",
+    "price": 15 
+    },
+    {
+    "_id": 1005,
+    "name": "Oil",
+    "description": "Oil Description",
+    "unit": "ltr",
+    "price": 35 
+    }
+]

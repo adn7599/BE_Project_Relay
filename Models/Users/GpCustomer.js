@@ -5,7 +5,7 @@ const locationSchema = require("./locationSchema");
 const gpCustomerSchema = mongoose.Schema({
   _id: {
     //Ration no.
-    type: Number,
+    type: String,
     minLength: 10,
     maxLength: 10,
   },
@@ -23,10 +23,6 @@ const gpCustomerSchema = mongoose.Schema({
   },
   address: {
     type: String,
-    required: true,
-  },
-  location: {
-    type: locationSchema,
     required: true,
   },
   mobNo: {

@@ -17,7 +17,7 @@ const commodityDetailSchema = mongoose.Schema(
 const distributorStockSchema = mongoose.Schema({
   _id: {
     //Ration No.
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: "GP_Distributor",
   },
   commodities: [commodityDetailSchema],

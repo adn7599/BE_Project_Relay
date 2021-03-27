@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const commodityDetailSchema = mongoose.Schema(
   {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
+    product : {
+      type: Number,
       ref: "Commodity",
     },
     allotedQuantity: {
@@ -21,7 +21,7 @@ const commodityDetailSchema = mongoose.Schema(
 const customerQuotaSchema = mongoose.Schema({
   _id: {
     //Ration No.
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: "GP_Customer",
   },
   commodities: [commodityDetailSchema],

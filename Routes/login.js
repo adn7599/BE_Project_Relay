@@ -39,6 +39,7 @@ router.post("/", async (req, res, next) => {
 
     try {
       let gpUserDoc = await gpModel.findById(reg_id);
+
       //Checking if user is valid
       if (gpUserDoc) {
         //user found in gpTable so valid
@@ -69,22 +70,27 @@ router.post("/", async (req, res, next) => {
           } else {
             //We've received the Relay Password
             //Creating new document from the user model i.e. Registering
-            let hashedPass = crypto
-              .createHash("SHA256")
-              .update(password)
-              .digest("hex");
+            if (password === relayPass) {
+              //password matched
+              let hashedPass = crypto
+                .createHash("SHA256")
+                .update(relayPass)
+                .digest("hex");
 
-            let userDoc = new model({
-              _id: reg_id,
-              regDateTime: new Date(),
-              password: hashedPass,
-            });
-            //Saving password in user collection
-            await userDoc.save();
+              let userDoc = new model({
+                _id: reg_id,
+                regDateTime: new Date(),
+                password: hashedPass,
+              });
+              //Saving password in user collection
+              await userDoc.save();
 
-            let token = await auth.getToken(role, reg_id);
+              let token = await auth.getToken(role, reg_id);
 
-            res.json({ status: "User Logged In", token });
+              res.json({ status: "User Logged In", token });
+            } else {
+              res.status(400).json({ error: "Invalid password" });
+            }
           }
         }
       } else {

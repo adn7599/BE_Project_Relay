@@ -1,0 +1,22 @@
+[
+    {
+        "_id": "1111111111",
+        "commodities": [
+            {
+                "product": 1001,
+                "allotedQuantity": 20,
+                "availableQuantity": 10
+            },
+            {
+                "product": 1002,
+                "allotedQuantity": 25,
+                "availableQuantity": 15
+            },
+            {
+                "product": 1005,
+                "allotedQuantity": 5,
+                "availableQuantity": 2 
+            }
+        ]
+    }
+]

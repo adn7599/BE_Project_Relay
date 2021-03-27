@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
-const orderSchema = require("../Transactions/Request/orderSchema");
+const orderSchema = require("../Transactions/orderSchema");
 
 const cartCustSchema = mongoose.Schema({
   _id: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: "GP_Customer",
   },
   orders: {
-    type: [{ type: orderSchema, unique: true }],
+    type: [orderSchema],
     required: true,
   },
 });
