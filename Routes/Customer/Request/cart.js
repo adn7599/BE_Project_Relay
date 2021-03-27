@@ -11,7 +11,62 @@ const orderModel = mongoose.model("Order", orderSchema);
 
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {});
+router.get("/", async (req, res, next) => {
+  try {
+    const reg_id = req.user.reg_id;
+
+    //Getting the cart Document
+    const cartDoc = await CustCart.findById(reg_id);
+
+    if (cartDoc) {
+      //Populating with product details
+      await cartDoc.populate("orders.product").execPopulate();
+
+      //Need to also add some quota details
+      //Finding the quota Document
+      const quotaDoc = await CustomerQuota.findById(reg_id);
+      const quotaDocObj = {};
+      quotaDoc.commodities.forEach((prod) => {
+        quotaDocObj[prod.product] = {
+          allotedQuantity: prod.allotedQuantity,
+          availableQuantity: prod.availableQuantity,
+        };
+      });
+
+      const mutCartDoc = cartDoc.toObject();
+      
+      for (let i = 0; i < mutCartDoc.orders.length; i++) {
+        const foundQuota = quotaDocObj[mutCartDoc.orders[i].product._id];
+        
+        mutCartDoc.orders[i].allotedQuantity = foundQuota.allotedQuantity;
+        mutCartDoc.orders[i].availableQuantity = foundQuota.availableQuantity;
+        mutCartDoc.orders[i].cartQuantity = mutCartDoc.orders[i].quantity;
+        delete mutCartDoc.orders[i].quantity;
+      }
+
+      res.json(mutCartDoc);
+    } else {
+      //First access, need to make cart
+      const newCartDoc = new CustCart({
+        _id: reg_id,
+        orders: [],
+      });
+
+      //saving the cart
+      await newCartDoc.save();
+      res.json(newCartDoc);
+    }
+  } catch (err) {
+    if (err instanceof mongoose.Error.ValidationError) {
+      res.status(400).json({
+        error: "Validation Error",
+        response: err.errors,
+      });
+    } else {
+      next(err);
+    }
+  }
+});
 
 router.post("/", async (req, res, next) => {
   //Update or add item to cart
