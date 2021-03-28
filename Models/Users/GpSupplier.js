@@ -21,6 +21,7 @@ const gpSupplierSchema = mongoose.Schema({
   location: {
     type: locationSchema,
     required: true,
+    index: '2dsphere',
   },
   mobNo: {
     type: String,

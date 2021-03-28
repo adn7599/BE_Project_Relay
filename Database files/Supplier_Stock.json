@@ -1,0 +1,52 @@
+[
+    {
+        "_id": "SP1111111111",
+        "commodities": [
+            {
+                "id": 1001,
+                "maxQuantity": 60,
+                "availableQuantity": 20
+            },
+            {
+                "id": 1002,
+                "maxQuantity": 60,
+                "availableQuantity": 20
+            },
+            {
+                "id": 1003,
+                "maxQuantity": 60,
+                "availableQuantity": 20
+            },
+            {
+                "id": 1004,
+                "maxQuantity": 60,
+                "availableQuantity": 20
+            }
+        ]
+    },
+    {
+        "_id": "SP2222222222",
+        "commodities": [
+            {
+                "id": 1001,
+                "maxQuantity": 60,
+                "availableQuantity": 20
+            },
+            {
+                "id": 1002,
+                "maxQuantity": 60,
+                "availableQuantity": 20
+            },
+            {
+                "id": 1003,
+                "maxQuantity": 60,
+                "availableQuantity": 20
+            },
+            {
+                "id": 1004,
+                "maxQuantity": 60,
+                "availableQuantity": 20
+            }
+        ]
+    }
+]

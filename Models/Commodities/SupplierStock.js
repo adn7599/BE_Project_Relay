@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const commodityDetailSchema = mongoose.Schema(
   {
     id: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Number,
       ref: "Commodity",
     },
     maxQuantity: {
@@ -21,7 +21,7 @@ const commodityDetailSchema = mongoose.Schema(
 const supplierStockSchema = mongoose.Schema({
   _id: {
     //Ration No.
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: "GP_Supplier",
   },
   commodities: [commodityDetailSchema],

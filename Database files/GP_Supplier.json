@@ -1,25 +1,50 @@
-[{
-  "_id": "SP1111111111",
-  "name": "Ajay",
-  "address": "Koparkhairne",
-  "location": [
-    12,
-    12
-  ],
-  "mobNo": "9911991199",
-  "email": "ajay@ajay.com",
-  "aadharNo": "123123123123",
-  "panNo": "1231231231"
-},{
-  "_id": "SP2222222222",
-  "name": "Shardul",
-  "address": "Dombivali",
-  "location": [
-    12,
-    12
-  ],
-  "mobMo": "9911991119",
-  "email": "shardul@shardul.com",
-  "aadharNo": "123123123122",
-  "panNo": "1231231232"
-}]
+[
+  {
+    "_id": "SP1111111111",
+    "name": "Ajay",
+    "address": "Koparkhairne",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        72.9756506,
+        19.1878736
+      ]
+    },
+    "mobNo": "9911991199",
+    "email": "ajay@ajay.com",
+    "aadharNo": "123123123123",
+    "panNo": "1231231231"
+  },
+  {
+    "_id": "SP2222222222",
+    "name": "Shardul",
+    "address": "Dombivali",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        72.9753446,
+        19.1870963
+      ]
+    },
+    "mobMo": "9911991119",
+    "email": "shardul@shardul.com",
+    "aadharNo": "123123123122",
+    "panNo": "1231231232"
+  },
+  {
+    "_id": "SP3333333333",
+    "name": "Advait",
+    "address": "Airoli",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        -72.7738706,
+        41.6332836
+      ]
+    },
+    "mobNo": "9820807599",
+    "email": "advait@advait.com",
+    "aadharNo": "123123123124",
+    "panNo": "1231231234"
+  }
+]
