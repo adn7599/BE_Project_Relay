@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const { GpSupplier, Supplier } = require("../../../Models/Users");
 const CustCart = require("../../../Models/Carts/CartCust");
-const { SupplierStock } = require("../../../Models/Commodities");
+const { SupplierStock, Commodity } = require("../../../Models/Commodities");
 
 const router = express.Router();
 
@@ -115,34 +115,95 @@ router.post("/", async (req, res, next) => {
         ]);
 
         //Need to check for order satisfaction
-
+        //Getting a list of valid supplier ids in a list for $in query for their carts
         const validSupplierIds = validSupplierDocs.map((supp) => supp._id);
-
+        //Getting the cart of the valid suppliers
         const supplStockDocs = await SupplierStock.find({
           _id: { $in: validSupplierIds },
         });
-        
-        const respSupplierDocs = validSupplierDocs
+        //Turning the returned array of docs into
+        /*{
+            supplier_id: {
+              prodId1: availquantity1,
+              prodId2: availquantity2,
+              prodId3: availquantity3,
+            },
+            ....
+          }
+        */
+        //for easy access with dict type architecture
+        const supplierStockDict = {};
 
-        for(let i=0;i<respSupplierDocs.length;i++){
+        supplStockDocs.forEach((supp) => {
+          supplierStockDict[supp._id] = {};
+          supp.commodities.forEach((comm) => {
+            supplierStockDict[supp._id][comm.id] = comm.availableQuantity;
+          });
+        });
 
+        //converting the customer cart the same way for only received orders
+        const cartOrdersDict = {};
+
+        for (let order of orders) {
+          const loc = cartDoc.orders.findIndex((ord) => ord.product == order);
+          cartOrdersDict[order] = cartDoc.orders[loc].quantity;
         }
-        res.json(supplStockDocs);
+
+        const supplierResp = [];
+
+        validSupplierDocs.forEach((supp) => {
+          const respSupp = { ...supp };
+          const suppId = supp._id;
+          let satisfiedOrders = [];
+          orders.forEach((order) => {
+            const orderResp = {};
+            orderResp.product = order;
+            if (typeof supplierStockDict[suppId][order] !== "undefined") {
+              if (supplierStockDict[suppId][order] >= cartOrdersDict[order]) {
+                orderResp.satisfied = true;
+              } else {
+                orderResp.satisfied = false;
+                orderResp.availableStock = supplierStockDict[suppId][order];
+              }
+              orderResp.keepsInStock = true;
+            } else {
+              orderResp.keepsInStock = false;
+            }
+            satisfiedOrders.push(orderResp);
+          });
+          respSupp.satisfiedOrders = satisfiedOrders;
+          supplierResp.push(respSupp);
+        });
+        //Sending extra details for client side processing
+        //Getting each cart product
+
+        const commodityDocs = await Commodity.find({ _id: { $in: orders } });
+
+        const cartInfo = {};
+
+        orders.forEach((order) => {
+          const loc = commodityDocs.findIndex((comm) => comm._id == order);
+          const info = commodityDocs[loc];
+          cartInfo[order] = {
+            name: info.name,
+            unit: info.unit,
+            price: info.price,
+            cartQuantity: cartOrdersDict[order],
+          };
+        });
+
+        res.json({
+          suppliersFound: supplierResp,
+          cartInfo,
+        });
       } else {
         //orders invalid. Sending error
         res.status(400).json({
           error: "Invalid orders or some orders not present in the cart",
-          orders,
-          cartOrderIds,
-          validOrders,
         });
       }
     } catch (err) {
-      if (err instanceof mongoose.Error.ValidationError) {
-        console.log(err);
-      } else {
-        next(err);
-      }
+      next(err);
     }
   } else {
     res.status(400).json({
