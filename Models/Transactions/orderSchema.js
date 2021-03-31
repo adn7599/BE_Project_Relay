@@ -6,12 +6,11 @@ const orderDetailSchema = mongoose.Schema(
       type: Number,
       ref: "Commodity",
       required: true,
-      unique: true,
     },
     quantity: {
       type: Number,
       required: true,
-      min: [0, "Order quantity must be >= 0"]
+      min: [0, "Order quantity must be >= 0"],
     },
   },
   { _id: false }

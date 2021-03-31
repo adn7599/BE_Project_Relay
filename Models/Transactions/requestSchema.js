@@ -3,15 +3,15 @@ const mongoose = require("mongoose");
 const orderSchema = require("./orderSchema");
 
 const refs = {
-  GP_CUSTOMER : 'GP_Customer',
-  GP_SUPPLIER : 'GP_Supplier',
-  GP_DISTRIBUTOR : 'GP_Distributor',
-}
+  GP_CUSTOMER: "GP_Customer",
+  GP_SUPPLIER: "GP_Supplier",
+  GP_DISTRIBUTOR: "GP_Distributor",
+};
 
 function getRequestSchema(reqRef, provRef) {
   const requestSchema = mongoose.Schema(
     {
-      reqestor_id: {
+      requester_id: {
         type: String,
         ref: reqRef,
         required: true,
@@ -25,8 +25,8 @@ function getRequestSchema(reqRef, provRef) {
         type: mongoose.Schema.Types.Date,
         required: true,
       },
-      order: {
-        type: [{ type: orderSchema, unique: true }],
+      orders: {
+        type: [orderSchema],
         required: true,
       },
     },
@@ -36,4 +36,4 @@ function getRequestSchema(reqRef, provRef) {
   return requestSchema;
 }
 
-module.exports = { getRequestSchema , refs};
+module.exports = { getRequestSchema, refs };
