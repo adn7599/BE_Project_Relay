@@ -6,6 +6,10 @@ const paymentSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    transaction_id: {
+      type: String,
+      required: true,
+    },
     time: {
       type: mongoose.Schema.Types.Date,
       required: true,

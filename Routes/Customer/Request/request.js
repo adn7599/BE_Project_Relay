@@ -22,7 +22,8 @@ const router = express.Router();
  *      "requester_id": "1111111111"
  *      "supplier_id": "SP111111111",
  *      "time": "time",
- *      "orders": [1001, 1002, 1003,..] //list of orders already placed in the cart
+ *      "orders": [{product: 1001, quantity: 2}, ...] //list of orders already placed in the cart
+ *      "payment_amount": 1001
  *    }
  *    request_sign: "signature"
  *
@@ -126,7 +127,34 @@ router.post("/", async (req, res, next) => {
 
         if (validOrders) {
           //Orders sent are valid
+
+          //checking if the payment_amount sent is valid
+          let calcCost = 0;
+          //Fetching the commodity details
+          //creating order list for using $in clause
+          const ordersList = request.orders.map((order) => order.product);
+          const commodityDocs = await Commodity.find({
+            _id: { $in: ordersList },
+          });
+
+          request.orders.forEach((order) => {
+            const price = commodityDocs.find((ord) => {
+              return ord._id == order.product;
+            }).price;
+            calcCost += order.quantity * price;
+          });
+
+          if (request.payment_amount != calcCost) {
+            res
+              .status(400)
+              .json({
+                error: `payment_amount is incorrect, must be ${calcCost}`,
+              });
+            return;
+          }
+
           //Now checking if the orders satisfy supplier's cart
+          //checking if the payment_amount is valid
           let satisfiesStock = true;
           let errStockMsg = "";
 
@@ -190,7 +218,6 @@ router.post("/", async (req, res, next) => {
             //finally, saving the transaction
             const transSaveResp = await transaction.save();
             res.json(transSaveResp);
-            
           } else {
             //orders do not satisfy supplier's stock
             res.status(400).json({
