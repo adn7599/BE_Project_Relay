@@ -66,7 +66,7 @@ router.post("/", async (req, res, next) => {
           //from the TTP Server
           let [errMsg, relayPass] = await fetchUserCredentials(role, reg_id);
           if (errMsg) {
-            res.status(400).json({ error: errMsg.data });
+            res.status(errMsg.status).json({ error: errMsg.data });
           } else {
             //We've received the Relay Password
             //Creating new document from the user model i.e. Registering

@@ -11,16 +11,14 @@ async function fetchUserCredentials(role, reg_id) {
     },
   });
   if (response.status == 200) {
-    return [null,response.data.relay_password];
-  }
-  else if(response.status == 404){
+    return [null, response.data.relay_password];
+  } else if (response.status == 213) {
     let errMsg = {
-      status: 404,
-      data: 'User not registered at TTP',
-    }
-    return [errMsg,null]
-  }
-  else {
+      status: 213,
+      data: "User not registered at TTP",
+    };
+    return [errMsg, null];
+  } else {
     throw new Error(
       `Error while communicating with TTP - status: ${response.status}, data: ${response.data}`
     );

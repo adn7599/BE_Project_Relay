@@ -86,7 +86,6 @@ router.post("/", async (req, res, next) => {
 
       for (let order of orders) {
         if (!cartOrderIds.includes(order)) {
-          console.log(order);
           validOrders = false;
           break;
         }
@@ -155,12 +154,14 @@ router.post("/", async (req, res, next) => {
           const respSupp = { ...supp };
           const suppId = supp._id;
           let satisfiedOrders = [];
+          let satisfiesNum = 0;
           orders.forEach((order) => {
             const orderResp = {};
             orderResp.product = order;
             if (typeof supplierStockDict[suppId][order] !== "undefined") {
               if (supplierStockDict[suppId][order] >= cartOrdersDict[order]) {
                 orderResp.satisfied = true;
+                satisfiesNum += 1;
               } else {
                 orderResp.satisfied = false;
                 orderResp.availableStock = supplierStockDict[suppId][order];
@@ -172,6 +173,7 @@ router.post("/", async (req, res, next) => {
             satisfiedOrders.push(orderResp);
           });
           respSupp.satisfiedOrders = satisfiedOrders;
+          respSupp.satisfiesNum = satisfiesNum;
           supplierResp.push(respSupp);
         });
         //Sending extra details for client side processing
@@ -180,7 +182,7 @@ router.post("/", async (req, res, next) => {
         const commodityDocs = await Commodity.find({ _id: { $in: orders } });
 
         const cartInfo = {};
-
+        let totalSelectedOrdersCost = 0;
         orders.forEach((order) => {
           const loc = commodityDocs.findIndex((comm) => comm._id == order);
           const info = commodityDocs[loc];
@@ -189,9 +191,14 @@ router.post("/", async (req, res, next) => {
             unit: info.unit,
             price: info.price,
             cartQuantity: cartOrdersDict[order],
+            cartCost: cartOrdersDict[order] * info.price,
           };
+          totalSelectedOrdersCost += cartInfo[order].cartCost;
         });
-
+        //Adding the totalSelectedOrdersCost
+        cartInfo.totalSelectedOrdersCost = totalSelectedOrdersCost;
+        //Adding total number of items selected in the cart
+        cartInfo.numberOfItemsSelected = orders.length;
         res.json({
           suppliersFound: supplierResp,
           cartInfo,

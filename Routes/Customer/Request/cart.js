@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const CartCust = require("../../../Models/Carts/CartCust");
 
 const CustCart = require("../../../Models/Carts/CartCust");
-const { CustomerQuota } = require("../../../Models/Commodities");
+const { CustomerQuota, Commodity } = require("../../../Models/Commodities");
 
 const orderSchema = require("../../../Models/Transactions/orderSchema");
 //Constructing temporary orderSchemaModel for validation
@@ -25,6 +25,7 @@ router.get("/", async (req, res, next) => {
       //Need to also add some quota details
       //Finding the quota Document
       const quotaDoc = await CustomerQuota.findById(reg_id);
+      //Converting to easily accessible dict form
       const quotaDocObj = {};
       quotaDoc.commodities.forEach((prod) => {
         quotaDocObj[prod.product] = {
@@ -34,15 +35,22 @@ router.get("/", async (req, res, next) => {
       });
 
       const mutCartDoc = cartDoc.toObject();
-      
+      let totalCartCost = 0;
       for (let i = 0; i < mutCartDoc.orders.length; i++) {
         const foundQuota = quotaDocObj[mutCartDoc.orders[i].product._id];
-        
+
         mutCartDoc.orders[i].allotedQuantity = foundQuota.allotedQuantity;
         mutCartDoc.orders[i].availableQuantity = foundQuota.availableQuantity;
         mutCartDoc.orders[i].cartQuantity = mutCartDoc.orders[i].quantity;
+        mutCartDoc.orders[i].cartCost =
+          mutCartDoc.orders[i].cartQuantity *
+          mutCartDoc.orders[i].product.price;
+        totalCartCost += mutCartDoc.orders[i].cartCost;
         delete mutCartDoc.orders[i].quantity;
       }
+
+      //Adding totalCartCost field
+      mutCartDoc.totalCartCost = totalCartCost;
 
       res.json(mutCartDoc);
     } else {

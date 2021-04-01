@@ -29,6 +29,10 @@ function getRequestSchema(reqRef, provRef) {
         type: [orderSchema],
         required: true,
       },
+      payment_amount: {
+        type: Number,
+        required: true,
+      },
     },
     { _id: false }
   );
