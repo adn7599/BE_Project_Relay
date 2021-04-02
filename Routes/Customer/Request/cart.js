@@ -5,7 +5,7 @@ const CartCust = require("../../../Models/Carts/CartCust");
 const CustCart = require("../../../Models/Carts/CartCust");
 const { CustomerQuota, Commodity } = require("../../../Models/Commodities");
 
-const orderSchema = require("../../../Models/Transactions/orderSchema");
+const orderSchema = require("../../../Models/Carts/orderSchema");
 //Constructing temporary orderSchemaModel for validation
 const orderModel = mongoose.model("Order", orderSchema);
 

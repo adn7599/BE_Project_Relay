@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
+const cancelRequest = require("./cancelRequest");
 const {
   SupplierStock,
   Commodity,
@@ -22,7 +23,7 @@ const router = express.Router();
  *      "requester_id": "1111111111"
  *      "supplier_id": "SP111111111",
  *      "time": "time",
- *      "orders": [{product: 1001, quantity: 2}, ...] //list of orders already placed in the cart
+ *      "orders": [{product: 1001, quantity: 2, totalCost: 100}, ...] //list of orders already placed in the cart
  *      "payment_amount": 1001
  *    }
  *    request_sign: "signature"
@@ -128,7 +129,7 @@ router.post("/", async (req, res, next) => {
         if (validOrders) {
           //Orders sent are valid
 
-          //checking if the payment_amount sent is valid
+          //checking if the payment_amount sent is valid(both individual and aggregate)
           let calcCost = 0;
           //Fetching the commodity details
           //creating order list for using $in clause
@@ -136,20 +137,32 @@ router.post("/", async (req, res, next) => {
           const commodityDocs = await Commodity.find({
             _id: { $in: ordersList },
           });
+          let isIndividualCostCorrect = true;
+          let individualCostErrorMsg = "";
 
-          request.orders.forEach((order) => {
+          for (let order of request.orders) {
             const price = commodityDocs.find((ord) => {
               return ord._id == order.product;
             }).price;
-            calcCost += order.quantity * price;
-          });
+            const calcOrderPrice = order.quantity * price;
+            //checking if individual total cost sent is corrent
+            if (order.totalCost !== calcOrderPrice) {
+              isIndividualCostCorrect = false;
+              individualCostErrorMsg = `Product ${order.product}'s cost is incorrent. Must be ${calcOrderPrice}`;
+              break;
+            }
+            calcCost += calcOrderPrice;
+          }
+
+          if (!isIndividualCostCorrect) {
+            res.status(400).json({ error: individualCostErrorMsg });
+            return;
+          }
 
           if (request.payment_amount != calcCost) {
-            res
-              .status(400)
-              .json({
-                error: `payment_amount is incorrect, must be ${calcCost}`,
-              });
+            res.status(400).json({
+              error: `payment_amount is incorrect, must be ${calcCost}`,
+            });
             return;
           }
 
@@ -241,11 +254,14 @@ router.post("/", async (req, res, next) => {
     }
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
-      res.status(400).json({ error: err.errors });
+      res.status(400).json({ error: "Validation Error", msg: err.errors });
     } else {
       next(err);
     }
   }
 });
+
+//Adding delete(cancel) router
+router.delete("/", cancelRequest);
 
 module.exports = router;

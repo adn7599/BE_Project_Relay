@@ -63,6 +63,7 @@ router.post("/", async (req, res, next) => {
       if (
         !(
           orders instanceof Array &&
+          orders.length > 0 &&
           orders.every((order) => {
             return Number.isInteger(order);
           })
@@ -70,7 +71,8 @@ router.post("/", async (req, res, next) => {
       ) {
         res.status(400).json({
           error: "Invalid orders",
-          msg: "orders: [1001,1002,1003, ...] i.e. array of integers",
+          msg:
+            "orders: [1001,1002,1003, ...] i.e. array of integers, must not be empty",
         });
         return;
       }

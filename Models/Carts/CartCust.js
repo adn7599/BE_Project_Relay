@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const orderSchema = require("../Transactions/orderSchema");
+const orderSchema = require("./orderSchema");
 
 const cartCustSchema = mongoose.Schema({
   _id: {
