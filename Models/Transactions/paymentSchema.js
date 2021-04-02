@@ -7,7 +7,7 @@ const paymentSchema = mongoose.Schema(
       required: true,
     },
     transaction_id: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     time: {

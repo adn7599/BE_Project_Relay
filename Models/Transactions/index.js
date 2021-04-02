@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const { getRequestSchema, refs } = require("./requestSchema");
 const paymentSchema = require("./paymentSchema");
 const confirmSchema = require("./confirmSchema");
+const cancelSchema = require("./cancelSchema");
 
 const transactionType = {
   CUST_SUPPL: "cust_suppl",
@@ -48,6 +49,14 @@ function getTransactionSchema(type) {
       default: null,
     },
     confirm_sign: {
+      type: String,
+      default: null,
+    },
+    cancel: {
+      type: cancelSchema,
+      default: null,
+    },
+    cancel_sign: {
       type: String,
       default: null,
     },
