@@ -138,7 +138,7 @@ router.post("/", async (req, res, next) => {
         supplStockDocs.forEach((supp) => {
           supplierStockDict[supp._id] = {};
           supp.commodities.forEach((comm) => {
-            supplierStockDict[supp._id][comm.id] = comm.availableQuantity;
+            supplierStockDict[supp._id][comm.product] = comm.availableQuantity;
           });
         });
 

@@ -174,7 +174,7 @@ router.post("/", async (req, res, next) => {
           for (let order of request.orders) {
             //finding the product in supplier's stock
             const stockComm = supplierStockDoc.commodities.find(
-              (comm) => comm.id == order.product
+              (comm) => comm.product == order.product
             );
             if (stockComm) {
               //order is present in supplier's stock
@@ -217,7 +217,7 @@ router.post("/", async (req, res, next) => {
                 (quotaOrd) => quotaOrd.product == order.product
               );
               const stockProd = supplierStockDoc.commodities.find(
-                (stkPrd) => stkPrd.id == order.product
+                (stkPrd) => stkPrd.product == order.product
               );
               //Deleting the cart item
               custCartDoc.orders.splice(cartOrderLoc, 1);
@@ -225,9 +225,12 @@ router.post("/", async (req, res, next) => {
               quotaOrder.availableQuantity -= order.quantity;
               stockProd.availableQuantity -= order.quantity;
             });
-            await custCartDoc.save();
-            await custQuotaDoc.save();
-            await supplierStockDoc.save();
+            //saving all the changes in cart,quota,stock
+            await Promise.all([
+              custCartDoc.save(),
+              custQuotaDoc.save(),
+              supplierStockDoc.save(),
+            ]);
             //finally, saving the transaction
             const transSaveResp = await transaction.save();
             res.json(transSaveResp);

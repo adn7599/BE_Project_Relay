@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const cancelSchema = require("../../../Models/Transactions/cancelSchema");
+const { CustomerQuota, SupplierStock } = require("../../../Models/Commodities");
 const { TransactionCustSuppl } = require("../../../Models/Transactions");
 const { sign } = require("jsonwebtoken");
 
@@ -40,8 +41,40 @@ async function cancelRequest(req, res, next) {
           //Updating the transaction
           transactionDoc.stageCompleted = "cancelled";
           transactionDoc.cancel = cancel;
-          transactionDoc.cancel_sign = sign;
+          transactionDoc.cancel_sign = cancel_sign;
 
+          //Adding cancelled items to the customer's quota and supplier's stock back
+          //finding customer quota and supplier stock
+          const custQuotaDoc = await CustomerQuota.findById(reg_id);
+          const supplStockDoc = await SupplierStock.findById(
+            transactionDoc.request.provider_id
+          );
+
+          transactionDoc.request.orders.forEach((order) => {
+            const quotaOrd = custQuotaDoc.commodities.find(
+              (crtOrd) => crtOrd.product == order.product
+            );
+            const stockOrd = supplStockDoc.commodities.find(
+              (stkOrd) => order.product == stkOrd.product
+            );
+
+            if (
+              quotaOrd.availableQuantity + order.quantity <=
+              quotaOrd.allotedQuantity
+            ) {
+              //within alloted quantity
+              quotaOrd.availableQuantity += order.quantity;
+            } else {
+              //surpasses limit. So setting the max amount
+              quotaOrd.availableQuantity = quotaOrd.allotedQuantity;
+            }
+
+            stockOrd.availableQuantity += order.quantity;
+          });
+
+          //saving updated quota and stock
+          await Promise.all([custQuotaDoc.save(), supplStockDoc.save()]);
+          //saving updated transaction
           const saveResp = await transactionDoc.save();
 
           res.json(saveResp);

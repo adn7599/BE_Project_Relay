@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const commodityDetailSchema = mongoose.Schema(
   {
-    id: {
+    product: {
       type: Number,
       ref: "Commodity",
     },
