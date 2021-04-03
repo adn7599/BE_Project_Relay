@@ -12,7 +12,6 @@ const paymentModel = mongoose.model("paymentModel", paymentSchema);
 //Input Json
 /*
  {
-    transaction_id: "",
     payment: { paymentSchema },
     payment_sign: ""
  } 
