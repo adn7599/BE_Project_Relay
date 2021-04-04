@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const locationSchema = require("./locationSchema");
+const locationSchema = require("./Util/locationSchema");
 
 const gpSupplierSchema = mongoose.Schema({
   _id: {
@@ -8,9 +8,9 @@ const gpSupplierSchema = mongoose.Schema({
     type: String,
     minLength: 12,
     maxLength: 12,
-    match: /^SP\d+/
+    match: /^SP\d+/,
   },
-  name:{
+  name: {
     type: String,
     required: true,
   },
@@ -21,7 +21,11 @@ const gpSupplierSchema = mongoose.Schema({
   location: {
     type: locationSchema,
     required: true,
-    index: '2dsphere',
+    index: "2dsphere",
+  },
+  region: {
+    type: String,
+    ref: "Region",
   },
   mobNo: {
     type: String,
@@ -48,8 +52,8 @@ const gpSupplierSchema = mongoose.Schema({
     required: true,
     minLength: 10,
     maxLength: 10,
-    unique: true
-  }
+    unique: true,
+  },
 });
 
 const GpSupplier = mongoose.model("GP_Supplier", gpSupplierSchema);

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const locationSchema = require("./locationSchema");
+const locationSchema = require("./Util/locationSchema");
 
 const gpCustomerSchema = mongoose.Schema({
   _id: {
