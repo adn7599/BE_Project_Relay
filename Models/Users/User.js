@@ -15,18 +15,6 @@ function getUserSchema(userRef) {
       type: String,
       required: true,
     },
-    publicKey: {
-      type: String,
-      required: true,
-    },
-    privateKey: {
-      type: String,
-      required: true,
-    },
-    relayPassword: {
-      type: String,
-      required: true,
-    },
   });
   return UserSchema;
 }
