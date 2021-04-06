@@ -1,8 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 
 const { TransactionCustSuppl } = require("../../../Models/Transactions");
 const confirmSchema = require("../../../Models/Transactions/confirmSchema");
+const verifyUserSign = require("../../../Authentication/verifySign");
 
 const router = express.Router();
 
@@ -29,6 +31,7 @@ router.post("/", async (req, res, next) => {
       //validating confirm_sign type
       if (typeof confirm_sign != "string") {
         res.status(400).json({ error: "confirm_sign must be a string" });
+        return;
       }
 
       //checking if the transaction_id is valid and also the reg_id matches while fetching the transaction
@@ -46,17 +49,89 @@ router.post("/", async (req, res, next) => {
         if (transactionDoc.stageCompleted == "payment") {
           //completedPhase is payment, can continue
 
-          //updating stageCompleted and saving confirm and confirm_sign
-          transactionDoc.stageCompleted = "confirm";
-          transactionDoc.confirm = confirm;
-          transactionDoc.confirm_sign = confirm_sign;
-
           //Need to check if requester_token and provider_token match
           //requester_token = requester_sign(sha256(transaction_id.payment_id))
           //provider_token = provider_sign(sha256(requester_sign(sha256(transaction_id.payment_id))))
+          //if both matches, then saving
 
-          //const respConfirm = await transactionDoc.save();
-          //res.json(respConfirm);
+          //confirm token created
+          const confirmToken = `${transactionDoc._id}.${transactionDoc.payment.id}`;
+          //console.log("confirm Token : ", confirmToken);
+          //hashing confirmToken
+          const hashedToken = crypto
+            .createHash("SHA256")
+            .update(confirmToken)
+            .digest("hex");
+
+          //console.log("confirm Token (hashed): ", hashedToken);
+          //verifying the token sent with TTP
+
+          //verifying requester's signed token
+          const [err, reqData] = await verifyUserSign(
+            "customer",
+            transactionDoc.request.requester_id,
+            hashedToken,
+            confirm.requester_token
+          );
+
+          if (!err) {
+            if (reqData) {
+              //Sign is verified
+              //Now need to verify provider's signed token
+
+              //hashing requester's signed token
+              const hashedReqConfirmToken = crypto
+                .createHash("SHA256")
+                .update(confirm.requester_token)
+                .digest("hex");
+
+              //console.log("hashedReqConfirmToken: ", hashedReqConfirmToken);
+
+              //now verifying if the signed provider's token matches with the newly hashed requester's confirm token
+              const [err, provData] = await verifyUserSign(
+                "SP",
+                transactionDoc.request.provider_id,
+                hashedReqConfirmToken,
+                confirm.provider_token
+              );
+                
+              if (!err) {
+                //No error while comm with TTP
+                if (provData) {
+                  //Sign is verified
+                  //Now saving the transaction
+                  //updating stageCompleted and saving confirm and confirm_sign
+                  transactionDoc.stageCompleted = "confirm";
+                  transactionDoc.confirm = confirm;
+                  transactionDoc.confirm_sign = confirm_sign;
+
+                  const confirmResp = await transactionDoc.save();
+
+                  res.json(confirmResp);
+                } else {
+                  //Sign not valid.
+                  res
+                    .status(400)
+                    .json({ error: "Invalid provider's confirm token" });
+                }
+              } else {
+                //Error while communicating with TTP
+                res
+                  .status(err.status)
+                  .json({ error: "provider_token: " + err.data });
+              }
+            } else {
+              //Invalid requester signed token
+              res
+                .status(400)
+                .json({ error: "Invalid requester's confirm token" });
+            }
+          } else {
+            //Some error while communicating with ttp
+            res
+              .status(err.status)
+              .json({ error: "requester_token: " + err.data });
+          }
         } else {
           //payment not made or is already confirmed or cancelled
           if (transactionDoc.stageCompleted == "cancelled") {
@@ -77,7 +152,7 @@ router.post("/", async (req, res, next) => {
     } else {
       res
         .status(400)
-        .json({ error: "Fields payment and payment_sign required" });
+        .json({ error: "Fields confirm and confirm_sign required" });
     }
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {

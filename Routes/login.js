@@ -34,7 +34,7 @@ router.post("/", async (req, res, next) => {
         res
           .status(400)
           .json({ error: "Role must be either customer or SP or DA" });
-        break;
+        return;
     }
 
     try {
