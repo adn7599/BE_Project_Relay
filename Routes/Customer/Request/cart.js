@@ -68,7 +68,7 @@ router.get("/", async (req, res, next) => {
     if (err instanceof mongoose.Error.ValidationError) {
       res.status(400).json({
         error: "Validation Error",
-        response: err.errors,
+        message: err.errors,
       });
     } else {
       next(err);
@@ -156,7 +156,7 @@ router.post("/", async (req, res, next) => {
     if (err instanceof mongoose.Error.ValidationError) {
       res.status(400).json({
         error: "Validation Error",
-        response: err.errors,
+        message: err.errors,
       });
     } else {
       next(err);
