@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const commodityDetailSchema = mongoose.Schema(
   {
-    id: {
+    product: {
       type: Number,
       ref: "Commodity",
     },
@@ -23,6 +23,9 @@ const distributorStockSchema = mongoose.Schema({
   commodities: [commodityDetailSchema],
 });
 
-const DistributorStock = mongoose.model("Distributor_Stock", distributorStockSchema);
+const DistributorStock = mongoose.model(
+  "Distributor_Stock",
+  distributorStockSchema
+);
 
 module.exports = DistributorStock;

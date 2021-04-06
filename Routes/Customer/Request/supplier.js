@@ -113,6 +113,16 @@ router.post("/", async (req, res, next) => {
               spherical: true,
             },
           },
+          {
+            $project: {
+              _id: true,
+              name: true,
+              address: true,
+              region: true,
+              mobNo: true,
+              email: true,
+            },
+          },
         ]);
 
         //Need to check for order satisfaction

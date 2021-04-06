@@ -17,52 +17,39 @@ router.get("/", async (req, res, next) => {
     //Getting the cart Document
     const cartDoc = await SupplCart.findById(reg_id);
 
-    if (cartDoc) {
-      //Populating with product details
-      await cartDoc.populate("orders.product").execPopulate();
+    //Populating with product details
+    await cartDoc.populate("orders.product").execPopulate();
 
-      //Need to also add some stock details
-      //Finding the stock Document
-      const stockDoc = await SupplierStock.findById(reg_id);
-      //Converting to easily accessible dict form
-      const stockDocObj = {};
-      stockDoc.commodities.forEach((prod) => {
-        stockDocObj[prod.product] = {
-          maxQuantity: prod.maxQuantity,
-          availableQuantity: prod.availableQuantity,
-        };
-      });
+    //Need to also add some stock details
+    //Finding the stock Document
+    const stockDoc = await SupplierStock.findById(reg_id);
+    //Converting to easily accessible dict form
+    const stockDocObj = {};
+    stockDoc.commodities.forEach((prod) => {
+      stockDocObj[prod.product] = {
+        maxQuantity: prod.maxQuantity,
+        availableQuantity: prod.availableQuantity,
+      };
+    });
 
-      const mutCartDoc = cartDoc.toObject();
-      let totalCartCost = 0;
-      for (let i = 0; i < mutCartDoc.orders.length; i++) {
-        const foundStock = stockDocObj[mutCartDoc.orders[i].product._id];
+    const mutCartDoc = cartDoc.toObject();
+    let totalCartCost = 0;
+    for (let i = 0; i < mutCartDoc.orders.length; i++) {
+      const foundStock = stockDocObj[mutCartDoc.orders[i].product._id];
 
-        mutCartDoc.orders[i].maxQuantity = foundStock.maxQuantity;
-        mutCartDoc.orders[i].availableQuantity = foundStock.availableQuantity;
-        mutCartDoc.orders[i].cartQuantity = mutCartDoc.orders[i].quantity;
-        mutCartDoc.orders[i].cartCost =
-          mutCartDoc.orders[i].cartQuantity *
-          mutCartDoc.orders[i].product.price;
-        totalCartCost += mutCartDoc.orders[i].cartCost;
-        delete mutCartDoc.orders[i].quantity;
-      }
-
-      //Adding totalCartCost field
-      mutCartDoc.totalCartCost = totalCartCost;
-
-      res.json(mutCartDoc);
-    } else {
-      //First access, need to make cart
-      const newCartDoc = new SupplCart({
-        _id: reg_id,
-        orders: [],
-      });
-
-      //saving the cart
-      await newCartDoc.save();
-      res.json(newCartDoc);
+      mutCartDoc.orders[i].maxQuantity = foundStock.maxQuantity;
+      mutCartDoc.orders[i].availableQuantity = foundStock.availableQuantity;
+      mutCartDoc.orders[i].cartQuantity = mutCartDoc.orders[i].quantity;
+      mutCartDoc.orders[i].cartCost =
+        mutCartDoc.orders[i].cartQuantity * mutCartDoc.orders[i].product.price;
+      totalCartCost += mutCartDoc.orders[i].cartCost;
+      delete mutCartDoc.orders[i].quantity;
     }
+
+    //Adding totalCartCost field
+    mutCartDoc.totalCartCost = totalCartCost;
+
+    res.json(mutCartDoc);
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
       res.status(400).json({
@@ -103,47 +90,29 @@ router.post("/", async (req, res, next) => {
         //satisfies quantity restriction
         const supplCartDoc = await SupplCart.findById(reg_id);
 
-        if (supplCartDoc) {
-          //if cart already exists
+        const orderIndex = supplCartDoc.orders.findIndex(
+          (order) => order.product === req.body.product
+        );
 
-          const orderIndex = supplCartDoc.orders.findIndex(
-            (order) => order.product === req.body.product
-          );
-
-          //checking if the order is already present in the cart
-          if (orderIndex >= 0) {
-            //order present
-            //updating already present order if order quantity more than 0
-            if (req.body.quantity > 0) {
-              supplCartDoc.orders[orderIndex].quantity = req.body.quantity;
-            } else {
-              //quantity is 0, so removing the order
-              supplCartDoc.orders.splice(orderIndex, 1);
-            }
-            const saveResp = await supplCartDoc.save();
-            res.json(saveResp);
-          } else {
-            //Index -1, order not present
-            //Inserting only if quantity more than 0
-            if (req.body.quantity > 0) {
-              supplCartDoc.orders.push(req.body);
-            }
-            const saveResp = await supplCartDoc.save();
-            res.json(saveResp);
-          }
-        } else {
-          //cart does not exist
-          //creating a new cart for the customer
-          const newSupplCustDoc = new SupplCart({
-            _id: reg_id,
-            orders: [],
-          });
-          //inserting new order if quantity is more than 0
+        //checking if the order is already present in the cart
+        if (orderIndex >= 0) {
+          //order present
+          //updating already present order if order quantity more than 0
           if (req.body.quantity > 0) {
-            newSupplCustDoc.orders.push(req.body);
+            supplCartDoc.orders[orderIndex].quantity = req.body.quantity;
+          } else {
+            //quantity is 0, so removing the order
+            supplCartDoc.orders.splice(orderIndex, 1);
           }
-          //saving the new cart with the new order inserted
-          const saveResp = await newSupplCustDoc.save();
+          const saveResp = await supplCartDoc.save();
+          res.json(saveResp);
+        } else {
+          //Index -1, order not present
+          //Inserting only if quantity more than 0
+          if (req.body.quantity > 0) {
+            supplCartDoc.orders.push(req.body);
+          }
+          const saveResp = await supplCartDoc.save();
           res.json(saveResp);
         }
       } else {

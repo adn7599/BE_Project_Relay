@@ -7,6 +7,8 @@ const db = require("../Models");
 const users = require("../Models/Users");
 const auth = require("../Authentication");
 const fetchUserCredentials = require("../Authentication/fetchPass");
+const CartCust = require("../Models/Carts/CartCust");
+const CartSuppl = require("../Models/Carts/CartSuppl");
 
 const router = express.Router();
 
@@ -84,6 +86,25 @@ router.post("/", async (req, res, next) => {
               });
               //Saving password in user collection
               await userDoc.save();
+
+              //if the user is a customer or a supplier
+              //need to create its cart
+              if (role === "customer") {
+                const custCart = new CartCust({
+                  _id: reg_id,
+                  orders: [],
+                });
+
+                await custCart.save();
+              }
+              if (role === "SP") {
+                const supplCart = new CartSuppl({
+                  _id: reg_id,
+                  orders: [],
+                });
+
+                await supplCart.save();
+              }
 
               let token = await auth.getToken(role, reg_id);
 
