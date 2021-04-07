@@ -64,8 +64,13 @@ router.post("/", async (req, res, next) => {
             });
           }
         } else {
-          //payment already made
-          res.status(400).json({ error: "Payment already done" });
+          if (transactionDoc.stageCompleted == "cancelled") {
+            //Transaction was cancelled
+            res.status(400).json({ error: "Transaction was cancelled" });
+          } else {
+            //payment already made (stage payment or confirm)
+            res.status(400).json({ error: "Payment already done" });
+          }
         }
       } else {
         //transaction id doesn't exist
@@ -78,9 +83,7 @@ router.post("/", async (req, res, next) => {
     }
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
-      res.status(400).json({ error: "Validation Error", msg: err.errors });
-    } else if (err instanceof mongoose.Error.CastError) {
-      res.status(400).json({ error: "Invalid transaction_id" });
+      res.status(400).json({ error: "Validation Error", message: err.errors });
     } else {
       next(err);
     }
