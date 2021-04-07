@@ -94,7 +94,7 @@ router.post("/", async (req, res, next) => {
                 hashedReqConfirmToken,
                 confirm.provider_token
               );
-                
+
               if (!err) {
                 //No error while comm with TTP
                 if (provData) {
@@ -156,9 +156,7 @@ router.post("/", async (req, res, next) => {
     }
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
-      res.status(400).json({ error: "Validation Error", msg: err.errors });
-    } else if (err instanceof mongoose.Error.CastError) {
-      res.status(400).json({ error: "Invalid transaction_id" });
+      res.status(400).json({ error: "Validation Error", message: err.errors });
     } else {
       next(err);
     }
