@@ -21,7 +21,7 @@ const router = express.Router();
  * {
  *    request: {
  *      "requester_id": "1111111111"
- *      "supplier_id": "SP111111111",
+ *      "provider_id": "SP111111111",
  *      "time": "time",
  *      "orders": [{product: 1001, quantity: 2, totalCost: 100}, ...] //list of orders already placed in the cart
  *      "payment_amount": 1001
@@ -49,7 +49,7 @@ router.post("/", async (req, res, next) => {
       await requestModel.validate(request);
 
       //checking if array of orders has unique elements
-      if (request.orders == 0) {
+      if (request.orders.length == 0) {
         res.status(400).json({ error: "request.orders array empty" });
         return;
       }
@@ -257,7 +257,7 @@ router.post("/", async (req, res, next) => {
     }
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
-      res.status(400).json({ error: "Validation Error", msg: err.errors });
+      res.status(400).json({ error: "Validation Error", message: err.errors });
     } else {
       next(err);
     }

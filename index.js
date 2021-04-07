@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 
 const config = require("./configurations.json");
 const db = require("./Models");
@@ -15,11 +16,12 @@ const distributor = require("./Routes/Distributor");
 const app = express();
 
 //Middleware
+app.use(morgan("tiny"));
 app.use(express.json());
 
 //Setting up routes
 app.use("/login", login);
-app.use("/productImage",productImage);
+app.use("/productImage", productImage);
 
 app.use("/customer", customer);
 app.use("/supplier", supplier);

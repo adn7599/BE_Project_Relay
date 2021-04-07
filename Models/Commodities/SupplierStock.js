@@ -14,6 +14,10 @@ const commodityDetailSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    orderedQuantity: {
+      type: Number,
+      required: true,
+    },
   },
   { _id: false }
 );

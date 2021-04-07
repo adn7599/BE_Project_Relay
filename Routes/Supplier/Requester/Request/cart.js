@@ -29,6 +29,7 @@ router.get("/", async (req, res, next) => {
       stockDocObj[prod.product] = {
         maxQuantity: prod.maxQuantity,
         availableQuantity: prod.availableQuantity,
+        orderedQuantity: prod.orderedQuantity,
       };
     });
 
@@ -39,6 +40,7 @@ router.get("/", async (req, res, next) => {
 
       mutCartDoc.orders[i].maxQuantity = foundStock.maxQuantity;
       mutCartDoc.orders[i].availableQuantity = foundStock.availableQuantity;
+      mutCartDoc.orders[i].orderedQuantity = foundStock.orderedQuantity;
       mutCartDoc.orders[i].cartQuantity = mutCartDoc.orders[i].quantity;
       mutCartDoc.orders[i].cartCost =
         mutCartDoc.orders[i].cartQuantity * mutCartDoc.orders[i].product.price;
@@ -84,7 +86,9 @@ router.post("/", async (req, res, next) => {
       //If the requested commodity is present in the stock
       //checking for commodity quantity satisfaction
       if (
-        order.quantity + sCommodity.availableQuantity <=
+        order.quantity +
+          sCommodity.availableQuantity +
+          sCommodity.orderedQuantity <=
         sCommodity.maxQuantity
       ) {
         //satisfies quantity restriction

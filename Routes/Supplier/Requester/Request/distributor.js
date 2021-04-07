@@ -145,7 +145,7 @@ router.post("/", async (req, res, next) => {
           orders.forEach((order) => {
             const orderResp = {};
             orderResp.product = order;
-            if (DistributorStockDict[distId][order]) {
+            if (typeof DistributorStockDict[distId][order] !== "undefined") {
               if (
                 DistributorStockDict[distId][order] >= cartOrdersDict[order]
               ) {

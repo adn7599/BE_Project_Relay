@@ -1,9 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-const cancelSchema = require("../../../Models/Transactions/cancelSchema");
-const { CustomerQuota, SupplierStock } = require("../../../Models/Commodities");
-const { TransactionCustSuppl } = require("../../../Models/Transactions");
+const cancelSchema = require("../../../../Models/Transactions/cancelSchema");
+const {
+  DistributorStock,
+  SupplierStock,
+} = require("../../../../Models/Commodities");
+const { TransactionSupplDist } = require("../../../../Models/Transactions");
 
 //creating a temp cancelled model for validation
 const cancelModel = mongoose.model("cancelModel", cancelSchema);
@@ -23,7 +26,7 @@ async function cancelRequest(req, res, next) {
         return;
       }
       //Finding if the transaction exists and belongs to the requestor
-      const transactionDoc = await TransactionCustSuppl.findOne({
+      const transactionDoc = await TransactionSupplDist.findOne({
         $and: [
           { _id: cancel.transaction_id },
           { "request.requester_id": reg_id },
@@ -34,7 +37,7 @@ async function cancelRequest(req, res, next) {
         //transaction exists and belongs to the requester
 
         //Need to check if stageCompleted is 'request'
-        //If not the transaction can't be cancelled
+        //If not then transaction can't be cancelled
         if (transactionDoc.stageCompleted == "request") {
           //Transaction belongs to the requestor
           //Updating the transaction
@@ -42,37 +45,29 @@ async function cancelRequest(req, res, next) {
           transactionDoc.cancel = cancel;
           transactionDoc.cancel_sign = cancel_sign;
 
-          //Adding cancelled items to the customer's quota and supplier's stock back
-          //finding customer quota and supplier stock
-          const custQuotaDoc = await CustomerQuota.findById(reg_id);
-          const supplStockDoc = await SupplierStock.findById(
+          //Removing cancelled items from the supplier's stock
+          //Adding cancelled items to distributor's stock back
+          //fetching supplier quota and supplier stock
+          const supplStockDoc = await SupplierStock.findById(reg_id);
+          const distStockDoc = await DistributorStock.findById(
             transactionDoc.request.provider_id
           );
 
           transactionDoc.request.orders.forEach((order) => {
-            const quotaOrd = custQuotaDoc.commodities.find(
-              (crtOrd) => crtOrd.product == order.product
+            const supplStockOrd = supplStockDoc.commodities.find(
+              (stkOrd) => stkOrd.product == order.product
             );
-            const stockOrd = supplStockDoc.commodities.find(
+            const distStockOrd = distStockDoc.commodities.find(
               (stkOrd) => order.product == stkOrd.product
             );
 
-            if (
-              quotaOrd.availableQuantity + order.quantity <=
-              quotaOrd.allotedQuantity
-            ) {
-              //within alloted quantity
-              quotaOrd.availableQuantity += order.quantity;
-            } else {
-              //surpasses limit. So setting the max amount
-              quotaOrd.availableQuantity = quotaOrd.allotedQuantity;
-            }
+            supplStockOrd.orderedQuantity -= order.quantity;
 
-            stockOrd.availableQuantity += order.quantity;
+            distStockOrd.availableQuantity += order.quantity;
           });
 
           //saving updated quota and stock
-          await Promise.all([custQuotaDoc.save(), supplStockDoc.save()]);
+          await Promise.all([supplStockDoc.save(), distStockDoc.save()]);
           //saving updated transaction
           const saveResp = await transactionDoc.save();
 
@@ -88,6 +83,7 @@ async function cancelRequest(req, res, next) {
               error: "Transaction already confirmed",
             });
           } else {
+            //stageCompleted = payment
             res.status(400).json({
               error: "Transaction cannot be cancelled. Payment already made",
             });
