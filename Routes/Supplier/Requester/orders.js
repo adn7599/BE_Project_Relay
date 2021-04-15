@@ -36,8 +36,14 @@ router.get("/:stageCompleted", async (req, res, next) => {
       }).select(selectStage[stageCompleted]);
 
       for (let i = 0; i < transactionDocs.length; i++) {
+        //populating product details
         await transactionDocs[i]
           .populate("request.orders.product", "name unit price")
+          .execPopulate();
+
+        //populating supplier details
+        await transactionDocs[i]
+          .populate("request.provider_id", "name address mobNo email")
           .execPopulate();
       }
 

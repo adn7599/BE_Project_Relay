@@ -119,6 +119,7 @@ router.post("/", async (req, res, next) => {
               name: true,
               address: true,
               region: true,
+              dist: true,
               mobNo: true,
               email: true,
             },
