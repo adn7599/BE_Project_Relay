@@ -46,7 +46,7 @@ router.get("/:stageCompleted", async (req, res, next) => {
           .populate("request.provider_id", "name address mobNo email")
           .execPopulate();
       }
-
+      transactionDocs.reverse();
       res.json(transactionDocs);
     } else {
       res.status(400).json({

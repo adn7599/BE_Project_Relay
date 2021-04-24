@@ -49,7 +49,7 @@ router.get("/:stageCompleted", async (req, res, next) => {
           )
           .execPopulate();
       }
-
+      transactionDocs.reverse();
       res.json(transactionDocs);
     } else {
       res.status(400).json({
