@@ -5,5 +5,5 @@
     "MONGO_URI": "mongodb+srv://myClient:myClient123@ttprelay.e8umm.mongodb.net/Relay?retryWrites=true&w=majority",
     "JWT_KEY": "ssshhhhmyToken",
     "JWT_ALGO": "HS256",
-    "JWT_EXP": "1h"
+    "JWT_EXP": "1d"
 }
