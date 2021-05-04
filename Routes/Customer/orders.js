@@ -16,6 +16,15 @@ const selectStage = {
   confirm: CONFIRM_SELECT,
 };
 
+const sortOrder = -1;
+
+const selectSort = {
+  request: { "request.time": sortOrder },
+  cancelled: { "cancel.time": sortOrder },
+  payment: { "payment.time": sortOrder },
+  confirm: { "confirm.time": sortOrder },
+};
+
 router.get("/:stageCompleted", async (req, res, next) => {
   try {
     const reg_id = req.user.reg_id;
@@ -33,7 +42,9 @@ router.get("/:stageCompleted", async (req, res, next) => {
           { "request.requester_id": reg_id },
           { stageCompleted: stageCompleted },
         ],
-      }).select(selectStage[stageCompleted]);
+      })
+        .select(selectStage[stageCompleted])
+        .sort(selectSort[stageCompleted]);
 
       for (let i = 0; i < transactionDocs.length; i++) {
         //populating product details
@@ -46,7 +57,6 @@ router.get("/:stageCompleted", async (req, res, next) => {
           .populate("request.provider_id", "name address location mobNo email")
           .execPopulate();
       }
-      transactionDocs.reverse();
       res.json(transactionDocs);
     } else {
       res.status(400).json({
