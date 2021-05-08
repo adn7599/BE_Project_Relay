@@ -1,31 +1,31 @@
 [
     {
         "_id": "DA1111111111",
-        "name": "Advait",
+        "name": "Express Distributors",
         "address": "Airoli",
         "region": "RMH0001",
         "mobNo": "9820807599",
-        "email": "advait@advait.com",
+        "email": "info@expresstraders.com",
         "aadharNo": "111111111111",
         "panNo": "1111111111"
     },
     {
         "_id": "DA2222222222",
-        "name": "Ajay",
-        "address": "Koparkhairne",
+        "name": "ASA Trading",
+        "address": "Mulund",
         "region": "RMH0001",
         "mobNo": "9820807591",
-        "email": "ajay@ajay.com",
+        "email": "info@asatrading.com",
         "aadharNo": "111111111112",
         "panNo": "1111111112"
     },
     {
         "_id": "DA3333333333",
-        "name": "Shardul",
-        "address": "Dombivali",
+        "name": "Happy Distributors",
+        "address": "Thane",
         "region": "RMH0021",
         "mobNo": "9820807592",
-        "email": "shardul@shardul.com",
+        "email": "info@happydistributors.com",
         "aadharNo": "111111111113",
         "panNo": "1111111113"
     }

@@ -1,37 +1,37 @@
 [
     {
-    "_id": 1001,
-    "name": "Wheat",
-    "description": "Wheat Description",
-    "unit": "Kg",
-    "price": 20
+        "_id": 1001,
+        "name": "Wheat",
+        "description": "Wheat is a grass widely cultivated for its seed, a cereal grain which is a worldwide staple food.",
+        "unit": "Kg",
+        "price": 7
     },
     {
-    "_id": 1002,
-    "name": "Rice",
-    "description": "Rice Description",
-    "unit": "Kg",
-    "price": 30
+        "_id": 1002,
+        "name": "Rice",
+        "description": "Rice is a cereal grain and is the most widely consumed staple food for over half of the world's human population",
+        "unit": "Kg",
+        "price": 9
     },
     {
-    "_id": 1003,
-    "name": "Maize",
-    "description": "Maize Description",
-    "unit": "Kg",
-    "price": 25
+        "_id": 1003,
+        "name": "Sugar",
+        "description": "Sugar is the generic name for sweet-tasting, soluble carbohydrates, many of which are used in food. Table sugar, granulated sugar, or regular sugar, refers to sucrose, a disaccharide composed of glucose and fructose.",
+        "unit": "Kg",
+        "price": 10
     },
     {
-    "_id": 1004,
-    "name": "Barley",
-    "description": "Barley Description",
-    "unit": "Kg",
-    "price": 15 
+        "_id": 1004,
+        "name": "Lentil",
+        "description": "The lentil (Lens culinaris or Lens esculenta) is an edible legume. It is an annual plant known for its lens-shaped seeds.",
+        "unit": "Kg",
+        "price": 12
     },
     {
-    "_id": 1005,
-    "name": "Oil",
-    "description": "Oil Description",
-    "unit": "ltr",
-    "price": 35 
+        "_id": 1005,
+        "name": "Cooking Oil",
+        "description": "Sunflower oil used for cooking and frying",
+        "unit": "ltr",
+        "price": 15
     }
 ]
