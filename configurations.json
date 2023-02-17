@@ -1,5 +1,5 @@
 {
-    "TTP_ADDR": "https://be-project-ttp.herokuapp.com",
+    "TTP_ADDR": "https://bewildered-puce-crayfish.cyclic.app",
     "TTP_TOKEN": "ucQb0lgz5RI9wfixBSBckUcO7pFRW2D2",
     "PORT": 6000,
     "MONGO_URI": "mongodb+srv://beproject_Relay:beproject_Relay@cluster0.nsihmdi.mongodb.net/Relay",
