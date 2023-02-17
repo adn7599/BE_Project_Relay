@@ -2,7 +2,7 @@
     "TTP_ADDR": "https://be-project-ttp.herokuapp.com",
     "TTP_TOKEN": "ucQb0lgz5RI9wfixBSBckUcO7pFRW2D2",
     "PORT": 6000,
-    "MONGO_URI": "mongodb+srv://myClient:myClient123@ttprelay.e8umm.mongodb.net/Relay?retryWrites=true&w=majority",
+    "MONGO_URI": "mongodb://127.0.0.1/Relay",
     "JWT_KEY": "ssshhhhmyToken",
     "JWT_ALGO": "HS256",
     "JWT_EXP": "1d"
